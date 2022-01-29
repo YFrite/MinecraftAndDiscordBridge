@@ -1,0 +1,29 @@
+name: DiscordChat # the plugins name as it should appear in the plugin list /pl
+version: 1.0 # the plugin's version
+author: YFrite
+main: com.yfrite.discordchat.Main
+api-version: 1.18 # the version of the API you want to use, required starting with 1.13
+
+commands:
+  disableMe:
+    description: Выключи отправку своих сообщений в чат дискорда тут!
+    usage: /<command>
+
+  enableMe:
+    description: Включи отправку своих сообщений в чат дискорда тут!
+    usage: /<command>
+
+  disableDiscord:
+    description: Выключи отправку сообщений с чата дискорда тут!
+    usage: /<command>
+
+  enableDiscord:
+    description: Включи отправку сообщений с чата дискорда тут!
+    usage: /<command>
+
+  setup:
+    description: Первичная настройка бота.
+    usage: /<command>
+#  block:
+#    description: Заблокируйте пользователя дискорд и вам не будут присылаться его сообщения!
+#    usage: /<command> <tag>
