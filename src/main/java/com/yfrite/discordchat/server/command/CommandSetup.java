@@ -6,17 +6,12 @@ import com.yfrite.discordchat.discord.ChannelListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CommandSetup implements CommandExecutor {
     @Override
@@ -37,18 +32,8 @@ public class CommandSetup implements CommandExecutor {
             jda = Constants.jda;
 
             jda.awaitReady();
-            List<String> channelIds = plugin.getConfig().getStringList("channels");
-            List<TextChannel> channels = new ArrayList<>();
 
-            plugin.getConfig().set("channels", channelIds);
-
-            for (String id : channelIds){
-                channels.add(jda.getTextChannelById(Long.parseLong(id)));
-                //server.getLogger().info(id);
-
-            }
-
-            Constants.channels = channels;
+            Constants.channels = plugin.getConfig().getStringList("channels");
 
             plugin.saveConfig();
 
@@ -56,13 +41,11 @@ public class CommandSetup implements CommandExecutor {
 
             jda.addEventListener(new ChannelListener());
 
-            CommandListUpdateAction commands = jda.updateCommands();
-            commands.addCommands(
-                    new CommandData("add", "Add channel for bot.")
-            );
+            jda.updateCommands().addCommands(
+                    Commands.slash("add", "Add channel for bot.")
+            ).queue();
 
-            commands.queue();
-        } catch (LoginException | InterruptedException e) {
+        } catch (InterruptedException e) {
             plugin.getLogger().throwing("CommandSetup", "onCommand", e);
         }
 

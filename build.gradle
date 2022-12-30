@@ -5,40 +5,34 @@ plugins {
 }
 
 group 'com.yfrite'
-version '1.0-SNAPSHOT'
+version '1.1'
 
 repositories {
     mavenCentral()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots'}
+    maven{ url "https://repo.papermc.io/repository/maven-public/" }
+
 }
 
 
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    compileOnly "io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT"
 
-    compileOnly "org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT"
-
-    implementation("net.dv8tion:JDA:5.0.0-alpha.4")
+    implementation "net.dv8tion:JDA:5.0.0-beta.2"
 }
 test {
     useJUnitPlatform()
 }
 
-//compileJava.options.encoding = 'UTF-8'
-
-javadoc.options.encoding = 'UTF-8'
-
-// 2nd approach
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-shadowJar {
-
-    dependencies {
-        include dependency("net.dv8tion:JDA:5.0.0-alpha.4")
-    }
-}
+//shadowJar {
+//
+//    dependencies {
+//        include dependency("net.dv8tion:JDA:5.0.0-beta.2")
+//        include dependency("org.apache.commons:commons-collections4:4.4")
+//    }
+//}

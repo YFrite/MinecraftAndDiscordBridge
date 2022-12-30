@@ -1,20 +1,13 @@
 package com.yfrite.discordchat;
 
 import com.yfrite.discordchat.discord.ChannelListener;
-import com.yfrite.discordchat.server.*;
-
+import com.yfrite.discordchat.server.ChatListener;
+import com.yfrite.discordchat.server.Utils;
 import com.yfrite.discordchat.server.command.*;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main extends JavaPlugin {
 
@@ -36,30 +29,18 @@ public class Main extends JavaPlugin {
         try{
             Main plugin = Main.getPlugin();
             String apiKey = plugin.getConfig().getString("discordApiKey");
-            JDA jda;
 
             Constants.DISCORD_API_KEY = apiKey;
 
             try {
-                Constants.jda = JDABuilder.createDefault(apiKey)
-                        .setActivity(Activity.playing("ZeroWorld"))
-                        .build();
+                var jda = JDABuilder.createDefault(apiKey)
+                        .enableIntents(GatewayIntent.MESSAGE_CONTENT)
+                        .build()
+                        .awaitReady();
 
-                jda = Constants.jda;
+                Constants.jda = jda;
 
-                jda.awaitReady();
-                List<String> channelIds = plugin.getConfig().getStringList("channels");
-                List<TextChannel> channels = new ArrayList<>();
-
-                plugin.getConfig().set("channels", channelIds);
-
-                for (String id : channelIds){
-                    channels.add(jda.getTextChannelById(Long.parseLong(id)));
-                    //server.getLogger().info(id);
-
-                }
-
-                Constants.channels = channels;
+                Constants.channels = plugin.getConfig().getStringList("channels");
 
                 plugin.saveConfig();
 
@@ -67,13 +48,11 @@ public class Main extends JavaPlugin {
 
                 jda.addEventListener(new ChannelListener());
 
-                CommandListUpdateAction commands = jda.updateCommands();
-                commands.addCommands(
-                        new CommandData("add", "Add channel for bot.")
-                );
+                jda.updateCommands().addCommands(
+                        Commands.slash("add", "Add channel for bot.")
+                ).queue();
 
-                commands.queue();
-            } catch (LoginException | InterruptedException e) {
+            } catch (InterruptedException e) {
                 plugin.getLogger().throwing("CommandSetup", "onCommand", e);
             }
         } catch (Exception exception){
@@ -90,5 +69,12 @@ public class Main extends JavaPlugin {
         //Command For setup Discord Bot
         this.getCommand("setup").setExecutor(new CommandSetup());
 
+    }
+
+    @Override
+    public void onDisable() {
+
+        Constants.jda.cancelRequests();
+        Constants.jda.shutdownNow();
     }
 }
